@@ -57,16 +57,27 @@ public class assignment3 {
         System.out.println(board.length);
         System.out.println(board[0].length);
         printBoard(board);
-        
+        testBoard = new int[numberOfRow][numberOfColumn][2];
         while (!isGameOver(board, numberOfConnect)){
             if(isAITurn){
                 System.out.println("AI is thinking...");
-                move = scanner.nextInt();
-                testBoard = board;
+                
                 for(int i = 0; i < numberOfColumn; i++){
+                    //testBoard = board
+                    for(int j = 0; j < numberOfRow; j++){
+                        for(int k = 0; k < numberOfColumn; k++){
+                            for(int l = 0; l < 2; l++){
+                                testBoard[j][k][l] = board[j][k][l];
+                            }
+                        }
+                    }
+                    
                     testBoard = updateBoard(testBoard, i, -1);
+                    //printBoard(testBoard);
+                    System.out.println("i" + i);
                     for(int j = 0; j < numberOfColumn; j++){
                         testBoard = updateBoard(testBoard, j, 1);
+                        printBoard(testBoard);
                         if(opponentMaxScore <= boardAssessment(testBoard, numberOfConnect, 1)){
                             opponentMaxScore = boardAssessment(testBoard, numberOfConnect, 1);
                             opponentMaxMove = j; 
@@ -83,7 +94,6 @@ public class assignment3 {
                 board = updateBoard(board, move, -1);
                 printBoard(board);
                 isAITurn = false; 
-                System.out.println("not ai turn");
                 /*if (isValidMove(board, move)){
                     board = updateBoard(board, move, -1);
                     printBoard(board);
@@ -270,11 +280,11 @@ public class assignment3 {
                 break;
             }
         }
-        printBoard(board2);
         return board2;
     }
     
-    public int[][][] updateTestBoard(){
+    public int[][][] updateTestBoard(int[][][] board2, int move, int identity){
+
         return null;
     }
     

@@ -109,6 +109,53 @@ public class assignment3 {
                         System.out.println("max score" + AIMaxScore);
                     }
                 }
+                
+                int ccc = 0; 
+                for(int i = 1; i < numberOfColumn-numberOfConnect+1; i++){
+                    for (int j = 0; j < numberOfConnect; j++){
+                        if (board[numberOfRow-1][i+j][0] == 1){
+                            ccc++;
+                        }
+                        if (ccc == numberOfConnect-1){
+                            for(int k = i; k < i + numberOfConnect; k++){
+                                if (board[numberOfRow-1][k][0] == 0){
+                                    move = k; 
+                                }
+                            }
+                        }
+                    }
+                    ccc = 0; 
+                }
+                
+                /*for(int i = 1; i < numberOfColumn-numberOfConnect; i++){
+                    for (int j = 0; j < numberOfConnect; j++){
+                        if (board[numberOfRow-1][i+j][0] == 1){
+                            ccc++;
+                        }
+                        if (ccc == numberOfConnect-1){
+                            for(int k = i; k < i + numberOfConnect; k++){
+                                if (board[numberOfRow-1][k][0] == 0){
+                                    move = k; 
+                                }
+                            }
+                        }
+                    }
+                    ccc = 0; 
+                }*/
+                
+                int rowCount = 1; 
+                for(int i = 2; i < numberOfColumn - 1; i++){
+                    if (board[numberOfRow-1][i][0] == board[numberOfRow-1][i-1][0] && board[numberOfRow-1][i][0] == 1){
+                        rowCount++;
+                    }
+                    else 
+                        rowCount = 1; 
+                    if (rowCount == numberOfConnect - 2 && board[numberOfRow-1][i-2][0] == 0){
+                        move = i-2;
+                    }
+                }
+                
+                
                 board = updateBoard(board, move, -1);
                 System.out.println("Current board: ");
                 printBoard(board);

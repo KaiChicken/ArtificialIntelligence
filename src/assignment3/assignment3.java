@@ -77,7 +77,7 @@ public class assignment3 {
                     if (isValidMove(testBoard, i)){
                         //printBoard(testBoard);
                         //System.out.println("i" + i);
-                        opponentMaxScore=0;
+                        opponentMaxScore = 0;
                         int[] scoreArray = new int[numberOfColumn];
                         for(int j = 0; j < numberOfColumn; j++){
                             for(int m = 0; m < numberOfRow; m++){
@@ -88,25 +88,29 @@ public class assignment3 {
                                 }
                             }
                             scoreArray[j] = boardAssessment(updateBoard(updateBoard(testBoard, i, 1), j, -1), numberOfConnect, 1);
-                            printBoard(updateBoard(updateBoard(testBoard, i, 1), j, -1));
-                            System.out.println("board score for player: " + boardAssessment(updateBoard(updateBoard(testBoard, i, 1), j, -1), numberOfConnect, 1));
+                            //printBoard(updateBoard(updateBoard(testBoard, i, 1), j, -1));
+                            //System.out.println("board score for player: " + boardAssessment(updateBoard(updateBoard(testBoard, i, 1), j, -1), numberOfConnect, 1));
                             System.out.println(scoreArray[j]);
                             if(opponentMaxScore <= scoreArray[j]){
                                 opponentMaxScore = scoreArray[j];
                                 opponentMaxMove = j; 
-                                System.out.println("opponent move " + j);
+                                //System.out.println("opponent move " + j);
                                 
                             }
                         }
-                        System.out.println("opponent max score" + opponentMaxScore);
+                        //System.out.println("opponent max score" + opponentMaxScore);
                         if(AIMaxScore >= opponentMaxScore){
                             AIMaxScore = opponentMaxScore;
                             AIMaxMove = i; 
                             move = i; 
-                            System.out.println("max score" + AIMaxScore);
-                            System.out.println("ai move " + i);
+                            //System.out.println("max score" + AIMaxScore);
+                            //System.out.println("ai move " + i);
                         }
-                        System.out.println("max score" + AIMaxScore);
+                        //System.out.println("max score" + AIMaxScore);
+                    }else{
+                        while(!isValidMove(board, move)){
+                            move = (int)(Math.random() *numberOfColumn);
+                        }
                     }
                 }
                 
@@ -150,13 +154,28 @@ public class assignment3 {
                     }
                     else 
                         rowCount = 1; 
-                    if (rowCount == numberOfConnect - 2 && board[numberOfRow-1][i-2][0] == 0){
-                        move = i-2;
+                    if (rowCount == numberOfConnect - 2 && board[numberOfRow-1][i-numberOfConnect+2][0] == 0){
+                        move = i-numberOfConnect+2;
                     }
                 }
                 
+                /*int loseMove = 0; 
+                int diagonalCount = 0;
+                for(int i = numberOfRow-1; i >= numberOfConnect-1; i--){
+                    for(int j = 0; j < numberOfColumn-numberOfConnect+1; j++){
+                        for(int k = 0; k < numberOfConnect; k++){
+                            if(board[i][j][0] == board[i+k][j+k][0] && board[i][j][0] == 1){
+                                diagonalCount++;
+                            }else{
+                                diagonalCount = 0;
+                            }
+                        }
+                    }
+                }*/
+                
                 
                 board = updateBoard(board, move, -1);
+                printMoveSequence(board);
                 System.out.println("Current board: ");
                 printBoard(board);
                 score = boardAssessment(board, numberOfConnect, 1);
@@ -345,7 +364,7 @@ public class assignment3 {
                 }
             }
         }
-        if (columnMoveCount < board2[0].length){
+        if (columnMoveCount < board2.length){
             board2[board2.length - columnMoveCount-1][move][0] += identity; 
             board2[board2.length - columnMoveCount-1][move][1] = moveCount; 
         }
@@ -593,5 +612,21 @@ public class assignment3 {
     
     public void firstLayer(int[][][] board, int numberOfColumn){
         
+    }
+    public int[][][] undo(int[][][] board){
+        int lastMove = 0;
+        int lastMovei = 0;
+        int lastMovej = 0;
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[0].length; j++){
+                if(board[i][j][1] > lastMove){
+                    lastMove = board[i][j][1];
+                    lastMovei = i;
+                    lastMovej = j;
+                }
+            }
+        }
+        board[lastMovei][lastMovej][0] = 0; 
+        return board;
     }
 }

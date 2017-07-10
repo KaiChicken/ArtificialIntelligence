@@ -19,11 +19,22 @@ public class handwritingRecognition {
     ArrayList<String> data = new ArrayList<String>();
     private final String trainFilename = "optdigits_train.txt";
     private final String testFilename = "optdigits_test.txt";
-    int numberOfLayer = 3;
+    int numberOfLayer = 4;
     double[] inputLayer = new double[64];
     double[] layer1 = new double[32];
     double[] layer2 = new double[16];
+    double learningRate = 0.1; 
     double[] outputLayer = new double[10];
+    double[] outputLayerWeightedSum = new double[10];
+    double initialLayerSum = 0.0;
+    double layer1Sum = 0.0;
+    double layer2Sum = 0.0;
+    double outputLayerSum = 0.0; 
+    double[] layer1Delta = new double[32];
+    double[] layer2Delta = new double[16];
+    double[] outputLayerDelta = new double[10];
+    double deltaj = 0.0;
+    double deltai = 0.0;
     
     
     double[][] weight = new double[65][32];
@@ -142,6 +153,129 @@ public class handwritingRecognition {
             System.out.println();
         }
     }
+    
+    
+    public void initialWeight(){
+        //initial weight value 
+        for(int i = 0; i < 65; i++){
+            for(int j = 0; j < 32; j++){
+                weight[i][j] = (double)0.001;
+            }
+        }
+        
+        for(int i = 0; i < 33; i++){
+            for(int j = 0; j < 16; j++){
+                weight2[i][j] = (double)0.001;
+            }
+        }
+        
+        for(int i = 0; i < 17; i++){
+            for(int j = 0; j < 10; j++){
+                weight3[i][j] = (double)0.001;
+            }
+        }
+    }
+    
+    public void feedForward(double[] input){
+        //enter input layer 
+        for(int i = 0; i < input.length-1; i++){
+            inputLayer[i] = input[i];
+        }
+        inputLayer[inputLayer.length-1] = 1;
+        
+        double nodeSum = 0;
+        //calculate the layer1 value
+        for(int k = 0; k < layer1.length-1; k++){
+            for(int i = 0; i < inputLayer.length; i++){
+                nodeSum += inputLayer[i] * weight[i][k];
+            }
+            layer1[k] = sigmoidFunction(nodeSum);
+            nodeSum = 0;
+        }
+        layer1[layer1.length-1] = 1;
+        
+        //calculate the layer2 value
+        System.out.println("layer2");
+        //weight2
+        for(int k = 0; k < layer2.length-1; k++){
+            for(int i = 0; i < layer1.length; i++){
+                nodeSum += layer1[i] * weight2[i][k];
+            }
+            outputLayerWeightedSum[k] = nodeSum;
+            layer1[k] = sigmoidFunction(nodeSum);
+            nodeSum = 0;
+        }
+        layer2[layer2.length-1] = 1;
+        
+        //calculate the output layer value
+        for(int k = 0; k < outputLayer.length-1; k++){
+            for(int i = 0; i < layer2.length; i++){
+                nodeSum += layer2[i] * weight3[i][k];
+            }
+            outputLayer[k] = sigmoidFunction(nodeSum);
+            nodeSum = 0;
+        }
+        
+        
+        for(int i = 0; i < layer1.length; i++){
+            layer1Sum += layer1[i];
+        }
+        
+        for(int i = 0; i < layer2.length; i++){
+            layer2Sum += layer1[i];
+        }
+        
+        for(int i = 0; i < outputLayer.length; i++){
+            outputLayerSum += outputLayer[i];
+        }
+        //calculate output layer percentage
+        /*double outputSum = 0; 
+        double[] outputPercentage = new double[outputLayer.length];
+        System.out.println("output percentage: ");
+        for(int i = 0; i < outputLayer.length; i++){
+            outputSum += outputLayer[i];
+        }
+        System.out.println(outputSum);
+        for(int i = 0; i < outputLayer.length; i++){
+            outputPercentage[i] = (double)outputLayer[i]/outputSum;
+            System.out.print(outputPercentage[i]+",");
+        }
+        System.out.println();*/
+        
+    }
+    
+    public void backPropagation(){
+        for(int i = 0; i < outputLayer.length; i++){
+            deltaj = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (outputLayerSum-outputLayer[i]);
+            for(int j = 0; j < layer2.length; j++){
+                weight3[j][i] = weight3[j][i] + learningRate * layer2[j] * deltaj;
+            }
+        }
+        
+        for(int i = 0; i < layer2.length; i++){
+            deltai = sigmoidFunctionDerivative(layer2[i]) * (outputLayerSum-outputLayer[i]);
+            for(int j = 0; j < layer1.length; j++){
+                weight2[j][i] = weight2[j][i] + learningRate * layer1[j] * weight2[j][i] * deltai;
+            }
+        }
+        
+        for(int i = 0; i < outputLayer.length; i++){
+            for(int j = 0; j < layer2.length; j++){
+                weight2[j][i] = weight2[j][i] + learningRate * layer2[j] * weight2[j][i] * sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (outputLayerSum-outputLayer[i]);
+            }
+        }
+    }
+    
+    //sigmoid function
+    public double sigmoidFunction(double neuron){
+        return (1/(1+Math.exp(neuron*-1)));
+    }
+    
+    //derivative of sigmoid function
+    public double sigmoidFunctionDerivative(double x){
+        return Math.exp(-x)/(Math.pow((1+Math.exp(-x)),2));
+    }
+    
     
     public void readTrainFile(){
     }

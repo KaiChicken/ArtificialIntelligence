@@ -209,8 +209,10 @@ public class handwritingRecognition {
         //enter input layer 
         for(int i = 0; i < input.length-1; i++){
             inputLayer[i] = input[i];
+            inputLayerWeightedSum[i] = input[i];
         }
         inputLayer[inputLayer.length-1] = 1;
+        inputLayerWeightedSum[inputLayerWeightedSum.length-1] = 1;
         
         double nodeSum = 0;
         //calculate the layer1 value
@@ -223,6 +225,7 @@ public class handwritingRecognition {
             nodeSum = 0;
         }
         layer1[layer1.length-1] = 1;
+        layer1WeightedSum[layer1WeightedSum.length-1] = 1;
         
         //calculate the layer2 value
         //System.out.println("layer2");
@@ -236,6 +239,7 @@ public class handwritingRecognition {
             nodeSum = 0;
         }
         layer2[layer2.length-1] = 1;
+        layer2WeightedSum[layer2WeightedSum.length-1] = 1;
         
         //calculate the output layer value
         for(int k = 0; k < outputLayer.length-1; k++){
@@ -246,6 +250,7 @@ public class handwritingRecognition {
             outputLayer[k] = sigmoidFunction(nodeSum);
             nodeSum = 0;
         }
+        outputLayerWeightedSum[outputLayerWeightedSum.length-1] = 1;
         
         
         for(int i = 0; i < layer1.length; i++){
@@ -311,8 +316,10 @@ public class handwritingRecognition {
         //enter input layer 
         for(int i = 0; i < input.length-1; i++){
             inputLayer[i] = input[i];
+            inputLayerWeightedSum[i] = input[i];
         }
         inputLayer[inputLayer.length-1] = 1;
+        inputLayerWeightedSum[inputLayerWeightedSum.length-1] = 1;
         
         double nodeSum = 0;
         //calculate the layer1 value
@@ -325,6 +332,7 @@ public class handwritingRecognition {
             nodeSum = 0;
         }
         layer1[layer1.length-1] = 1;
+        layer1WeightedSum[layer1WeightedSum.length-1] = 1;
         
         //calculate the layer2 value
         //System.out.println("layer2");
@@ -338,6 +346,7 @@ public class handwritingRecognition {
             nodeSum = 0;
         }
         layer2[layer2.length-1] = 1;
+        layer2WeightedSum[layer2WeightedSum.length-1] = 1;
         
         //calculate the output layer value
         for(int k = 0; k < outputLayer.length-1; k++){
@@ -348,6 +357,7 @@ public class handwritingRecognition {
             outputLayer[k] = sigmoidFunction(nodeSum);
             nodeSum = 0;
         }
+        outputLayerWeightedSum[outputLayerWeightedSum.length-1] = 1;
         
         
         for(int i = 0; i < layer1.length; i++){

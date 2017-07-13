@@ -29,6 +29,11 @@ public class handwritingRecognition {
     double[] layer2 = new double[17];
     double[] outputLayer = new double[10];
     
+    double[] testInputLayer = new double[65];
+    double[] testLayer1 = new double[33];
+    double[] testLayer2 = new double[17];
+    double[] testOutputLayer = new double[10];
+    
     double[] inputLayerWeightedSum = new double[65];
     double[] layer1WeightedSum = new double[33];
     double[] layer2WeightedSum = new double[17];
@@ -50,6 +55,7 @@ public class handwritingRecognition {
     double[][] weight = new double[65][32];
     double[][] weight2 = new double[33][16];
     double[][] weight3 = new double[17][10];
+
      
     public static void main(String[] args){
         handwritingRecognition hr = new handwritingRecognition();
@@ -66,32 +72,44 @@ public class handwritingRecognition {
         
         hr.initialWeight();
         
-        for(int i = 0; i <hr.trainData.length; i++){
-            double[] in = new double[hr.trainData[i].length];
-            System.out.println("try " + i);
-            for(int j = 0; j < hr.trainData[i].length; j++){
-                in[j] = hr.trainData[i][j];
-            }
-            hr.feedForward(in);
-            hr.backPropagation((int)in[64]);
+        //train data
+        for(int i = 0; i < hr.trainData.length; i++){
+            //if((int)hr.trainData[i][64] == 1){
+                double[] in = new double[hr.trainData[i].length];
+                //System.out.println("try " + i);
+                for(int j = 0; j < hr.trainData[i].length; j++){
+                    in[j] = hr.trainData[i][j];
+                }
+                hr.feedForward(in);
+                hr.backPropagation((int)in[64]);
+                hr.outputLayerSum =0.0;
+                hr.layer1Sum = 0.0;
+                hr.layer2Sum = 0.0;
+            //}
         }
         
+        //test
         int correctCounter = 0; 
-        for(int i = 0; i < hr.trainData.length; i++){
-            double[] test = new double[hr.trainData[0].length];
-            for(int j = 0; j < hr.trainData[i].length; j++){
-                test[j] = hr.trainData[i][j];
+        int numberOfTest = 0; 
+        for(int i = 0; i < hr.testData.length; i++){
+            double[] test = new double[hr.testData[i].length];
+            for(int j = 0; j < hr.testData[i].length; j++){
+                test[j] = hr.testData[i][j];
             }
             hr.test(test);
             hr.expectedOutput = (int)test[64];
+            System.out.println("expected "+hr.expectedOutput + " vs actual " + hr.actualOutput);
             if(hr.expectedOutput == hr.actualOutput){
                correctCounter++;
             }
+            numberOfTest++;
         }
         
-        System.out.println("correct counter " + (double)(correctCounter)/(double)(hr.trainData.length));
+        System.out.println("number of input tested: " + numberOfTest);
+        System.out.println("number of correct answer: " + correctCounter);
+        System.out.println("correct answer rate " + (double)(correctCounter)/(double)(numberOfTest));
         correctCounter =0;
-        
+        numberOfTest = 0;
         
         
         
@@ -223,46 +241,42 @@ public class handwritingRecognition {
     public void test(double[] input){
         //enter input layer 
         for(int i = 0; i < input.length-1; i++){
-            inputLayer[i] = input[i];
+            testInputLayer[i] = input[i];
         }
-        inputLayer[inputLayer.length-1] = 1;
+        testInputLayer[testInputLayer.length-1] = 1;
         
         double nodeSum = 0;
         //calculate the layer1 value
-        for(int k = 0; k < layer1.length-1; k++){
-            for(int i = 0; i < inputLayer.length; i++){
-                nodeSum += inputLayer[i] * weight[i][k];
+        for(int k = 0; k < testLayer1.length-1; k++){
+            for(int i = 0; i < testInputLayer.length; i++){
+                nodeSum += testInputLayer[i] * weight[i][k];
             }
-            layer1WeightedSum[k] = nodeSum; 
-            layer1[k] = sigmoidFunction(nodeSum);
+            testLayer1[k] = sigmoidFunction(nodeSum);
             nodeSum = 0;
         }
-        layer1[layer1.length-1] = 1;
+        testLayer1[testLayer1.length-1] = 1;
         
         //calculate the layer2 value
         //System.out.println("layer2");
         //weight2
-        for(int k = 0; k < layer2.length-1; k++){
-            for(int i = 0; i < layer1.length; i++){
-                nodeSum += layer1[i] * weight2[i][k];
+        for(int k = 0; k < testLayer2.length-1; k++){
+            for(int i = 0; i < testLayer1.length; i++){
+                nodeSum += testLayer1[i] * weight2[i][k];
             }
-            layer2WeightedSum[k] = nodeSum; 
-            layer2[k] = sigmoidFunction(nodeSum);
+            testLayer2[k] = sigmoidFunction(nodeSum);
             nodeSum = 0;
         }
-        layer2[layer2.length-1] = 1;
-        layer2WeightedSum[layer2WeightedSum.length-1] = 1;
+        testLayer2[testLayer2.length-1] = 1;
         
         //calculate the output layer value
-        for(int k = 0; k < outputLayer.length-1; k++){
-            for(int i = 0; i < layer2.length; i++){
-                nodeSum += layer2[i] * weight3[i][k];
+        for(int k = 0; k < testOutputLayer.length-1; k++){
+            for(int i = 0; i < testLayer2.length; i++){
+                nodeSum += testLayer2[i] * weight3[i][k];
             }
             outputLayerWeightedSum[k] = nodeSum;
-            outputLayer[k] = sigmoidFunction(nodeSum);
+            testOutputLayer[k] = sigmoidFunction(nodeSum);
             nodeSum = 0;
         }
-        outputLayerWeightedSum[outputLayerWeightedSum.length-1] = 1;
         
         
         for(int i = 0; i < layer1.length; i++){
@@ -280,22 +294,26 @@ public class handwritingRecognition {
         double maxPercentage =0.0;
         //calculate output layer percentage
         double outputSum = 0; 
-        double[] outputPercentage = new double[outputLayer.length];
-        System.out.println("output percentage: ");
-        for(int i = 0; i < outputLayer.length; i++){
-            outputSum += outputLayer[i];
+        double[] outputPercentage = new double[testOutputLayer.length];
+        //System.out.println("output percentage: ");
+        for(int i = 0; i < testOutputLayer.length; i++){
+            outputSum += testOutputLayer[i];
         }
-        System.out.println(outputSum);
-        for(int i = 0; i < outputLayer.length; i++){
-            outputPercentage[i] = (double)outputLayer[i]/outputSum;
-            System.out.print(outputPercentage[i]+",");
+        //System.out.println(outputSum);
+        for(int i = 0; i < testOutputLayer.length; i++){
+            outputPercentage[i] = (double)testOutputLayer[i]/outputSum;
+            //System.out.print(outputPercentage[i]+",");
         }
-        for(int i = 0; i < outputLayer.length; i++){
+        for(int i = 0; i < testOutputLayer.length; i++){
             if(outputPercentage[i] > maxPercentage){
+                maxPercentage = outputPercentage[i];
                 this.actualOutput = i;
             }
+            //System.out.println("output p "+i+" "+outputPercentage[i]);
         }
-        System.out.println();
+        outputSum = 0;
+        //System.out.println("actual" + actualOutput);
+        //System.out.println();
     }
     
     
@@ -314,19 +332,20 @@ public class handwritingRecognition {
         //initial weight value 
         for(int i = 0; i < 65; i++){
             for(int j = 0; j < 32; j++){
-                weight[i][j] = (double)Math.random()*Math.random()*Math.random()*Math.random();
+                weight[i][j] = (double)Math.pow(Math.random(), 4);
+                //weight[i][j] = (double)Math.pow(Math.random(), 5);
             }
         }
         
         for(int i = 0; i < 33; i++){
             for(int j = 0; j < 16; j++){
-                weight2[i][j] = (double)Math.random()*Math.random()*Math.random()*Math.random();
+                weight2[i][j] = (double)Math.pow(Math.random(), 4);
             }
         }
         
         for(int i = 0; i < 17; i++){
             for(int j = 0; j < 10; j++){
-                weight3[i][j] = (double)Math.random()*Math.random()*Math.random()*Math.random();
+                weight3[i][j] = (double)Math.pow(Math.random(), 4);
             }
         }
     }
@@ -414,7 +433,7 @@ public class handwritingRecognition {
         }*/
         for(int i = 0; i < outputLayer.length; i++){
             if (i == expectedOutput){
-                outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (outputLayerSum-outputLayer[i]);
+                outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (1-outputLayer[i]);
             }else{
                 outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (0-outputLayer[i]);
             }

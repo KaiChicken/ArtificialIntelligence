@@ -98,7 +98,7 @@ public class handwritingRecognition {
             }
             hr.test(test);
             hr.expectedOutput = (int)test[64];
-            System.out.println("expected "+hr.expectedOutput + " vs actual " + hr.actualOutput);
+            //System.out.println("expected "+hr.expectedOutput + " vs actual " + hr.actualOutput);
             if(hr.expectedOutput == hr.actualOutput){
                correctCounter++;
             }
@@ -111,8 +111,7 @@ public class handwritingRecognition {
         correctCounter =0;
         numberOfTest = 0;
         
-        
-        
+        /*
         System.out.println("weight3");
         for(int i = 0; i < hr.weight3.length; i++){
             for(int j = 0; j < hr.weight3[0].length; j++){
@@ -136,7 +135,7 @@ public class handwritingRecognition {
             }
             System.out.println();
         }
-        
+        */
         
         /*
         //initial weight value 
@@ -332,20 +331,20 @@ public class handwritingRecognition {
         //initial weight value 
         for(int i = 0; i < 65; i++){
             for(int j = 0; j < 32; j++){
-                weight[i][j] = (double)Math.pow(Math.random(), 4);
+                weight[i][j] = (double)0.01;
                 //weight[i][j] = (double)Math.pow(Math.random(), 5);
             }
         }
         
         for(int i = 0; i < 33; i++){
             for(int j = 0; j < 16; j++){
-                weight2[i][j] = (double)Math.pow(Math.random(), 4);
+                weight2[i][j] = (double)0.01;
             }
         }
         
         for(int i = 0; i < 17; i++){
             for(int j = 0; j < 10; j++){
-                weight3[i][j] = (double)Math.pow(Math.random(), 4);
+                weight3[i][j] = (double)0.01;
             }
         }
     }
@@ -433,7 +432,7 @@ public class handwritingRecognition {
         }*/
         for(int i = 0; i < outputLayer.length; i++){
             if (i == expectedOutput){
-                outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (1-outputLayer[i]);
+                outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (outputLayerSum-outputLayer[i]);
             }else{
                 outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (0-outputLayer[i]);
             }
@@ -493,7 +492,7 @@ public class handwritingRecognition {
     
     //derivative of sigmoid function
     public double sigmoidFunctionDerivative(double x){
-        return Math.exp(-x)/(Math.pow((1+Math.exp(-x)),2));
+        return Math.exp(x*(double)-1)/(Math.pow((1+Math.exp(x*(double)-1)),2));
     }
     
     //read test data file

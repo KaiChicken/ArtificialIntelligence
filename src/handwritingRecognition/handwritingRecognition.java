@@ -13,6 +13,7 @@ import java.util.*;
  * @author tom_c
  */
 public class handwritingRecognition {
+    int justACounter = 0;
     int numberOfLine;
     int[][] trainData;
     int[][] testData;
@@ -72,8 +73,15 @@ public class handwritingRecognition {
         
         hr.initialWeight();
         
+        System.out.println("weight3");
+        for(int i = 0; i < hr.weight3.length; i++){
+            for(int j = 0; j < hr.weight3[0].length; j++){
+                System.out.print(hr.weight3[i][j] + ", ");
+            }
+            System.out.println();
+        }
         //train data
-        for(int i = 0; i < hr.trainData.length; i++){
+        for(int i = 0; i < 1; i++){
             //if((int)hr.trainData[i][64] == 1){
                 double[] in = new double[hr.trainData[i].length];
                 //System.out.println("try " + i);
@@ -89,6 +97,7 @@ public class handwritingRecognition {
         }
         
         //test
+        /*
         int correctCounter = 0; 
         int numberOfTest = 0; 
         for(int i = 0; i < hr.testData.length; i++){
@@ -103,6 +112,7 @@ public class handwritingRecognition {
                correctCounter++;
             }
             numberOfTest++;
+            outputLayerSum = 0.0;
         }
         
         System.out.println("number of input tested: " + numberOfTest);
@@ -110,8 +120,9 @@ public class handwritingRecognition {
         System.out.println("correct answer rate " + (double)(correctCounter)/(double)(numberOfTest));
         correctCounter =0;
         numberOfTest = 0;
+        */
         
-        /*
+        
         System.out.println("weight3");
         for(int i = 0; i < hr.weight3.length; i++){
             for(int j = 0; j < hr.weight3[0].length; j++){
@@ -135,112 +146,65 @@ public class handwritingRecognition {
             }
             System.out.println();
         }
-        */
         
+        
+        double layerSum = 0.0;
         /*
-        //initial weight value 
-        for(int i = 0; i < 64; i++){
-            for(int j = 0; j < 32; j++){
-                hr.weight[i][j] = (double)0.001;
-                //System.out.print(hr.weight[i][j]+", ");
-            }
-            //System.out.println();
-        }
-        //hr.weight[65][32] = 1;
-        
-        for(int i = 0; i < 32; i++){
-            for(int j = 0; j < 16; j++){
-                hr.weight2[i][j] = (double)0.001;
-                //System.out.print(hr.weight2[i][j]+", ");
-            }
-            //System.out.println();
-        }
-        //hr.weight2[33][16] = 1;
-        
-        for(int i = 0; i < 16; i++){
-            for(int j = 0; j < 10; j++){
-                hr.weight3[i][j] = (double)0.001;
-                //System.out.print(hr.weight3[i][j]+", ");
-            }
-            //System.out.println();
-        }
-        
-       
-        //enter input layer value
+        System.out.println("\ninput layer");
         for(int i = 0; i < hr.inputLayer.length; i++){
-            hr.inputLayer[i] = (double)((double)hr.trainData[0][i]/16);
-            //hr.inputLayer[i] = 1.0;
-            System.out.print(hr.inputLayer[i]+",, ");
+            System.out.print(hr.inputLayer[i]+", ");
+            layerSum += hr.inputLayer[i];
         }
-        System.out.println();
+        System.out.println("\n"+layerSum);
+        layerSum = 0.0;
         
-        double nodeSum = 0;
-        //calculate the layer1 value
-        System.out.println("layer1");
-        for(int k = 0; k < hr.layer1.length; k++){
-            for(int i = 0; i < hr.inputLayer.length; i++){
-                nodeSum += hr.inputLayer[i] * hr.weight[i][k];
-                //System.out.println(hr.trainData[0][i] + "   " + hr.weight[i][k] + "    " + nodeSum);
-            }
-            hr.layer1[k] = nodeSum*(1/(1+Math.exp(nodeSum*-1)));
-            //hr.layer1[k] = nodeSum;
-            nodeSum = 0;
-            System.out.print(hr.layer1[k]+", ");
+        System.out.println("\n\nlayer1");
+        for(int i = 0; i < hr.layer1.length; i++){
+            System.out.print(hr.layer1[i]+", ");
+            layerSum += hr.layer1[i];
         }
-        System.out.println();
+        System.out.println("\n"+layerSum);
+        layerSum = 0.0;
         
-        //calculate the layer2 value
-        System.out.println("layer2");
-        //weight2
-        for(int k = 0; k < hr.layer2.length; k++){
-            for(int i = 0; i < hr.layer1.length; i++){
-                nodeSum += hr.layer1[i] * hr.weight2[i][k];
-                //System.out.println(hr.trainData[0][i] + "   " + hr.weight[i][k] + "    " + nodeSum);
-            }
-            hr.layer2[k] = nodeSum*(1/(1+Math.exp(nodeSum*-1)));
-            //hr.layer2[k] = nodeSum;
-            nodeSum = 0;
-            System.out.print(hr.layer2[k]+", ");
+        System.out.println("\n\nlayer2");
+        for(int i = 0; i < hr.layer2.length; i++){
+            System.out.print(hr.layer2[i]+", ");
+            layerSum += hr.layer2[i];
         }
-        System.out.println();
-        
-        //calculate the output layer value
-        System.out.println("output layer");
-        //weight3
-        for(int k = 0; k < hr.outputLayer.length; k++){
-            for(int i = 0; i < hr.layer2.length; i++){
-                nodeSum += hr.layer2[i] * hr.weight3[i][k];
-                //System.out.println(hr.trainData[0][i] + "   " + hr.weight[i][k] + "    " + nodeSum);
-            }
-            hr.outputLayer[k] = nodeSum*(1/(1+Math.exp(nodeSum*-1)));
-            //hr.outputLayer[k] = nodeSum;
-            nodeSum = 0;
-            System.out.print(hr.outputLayer[k]+", ");
-        }
-        System.out.println();
-        
-        //calculate output layer percentage
-        double outputSum = 0; 
-        double[] outputPercentage = new double[hr.outputLayer.length];
-        System.out.println("output percentage: ");
-        for(int i = 0; i < hr.outputLayer.length; i++){
-            outputSum += hr.outputLayer[i];
-        }
-        System.out.println(outputSum);
-        for(int i = 0; i < hr.outputLayer.length; i++){
-            outputPercentage[i] = (double)hr.outputLayer[i]/outputSum;
-            System.out.print(outputPercentage[i]+",");
-        }
-        System.out.println();
+        System.out.println("\n"+layerSum);
+        layerSum = 0.0;
         */
+        /*
+        System.out.println("\n\noutputLayer");
+        for(int i = 0; i < hr.outputLayer.length; i++){
+            System.out.print(hr.outputLayerWeightedSum[i]+", ");
+            layerSum += hr.outputLayerWeightedSum[i];
+        }
+        System.out.println("\n"+layerSum);
+        layerSum = 0.0;
         
+        System.out.println("\n\noutput layer weighted");
+        for(int i = 0; i < hr.outputLayer.length; i++){
+            //System.out.print(hr.sigmoidFunctionDerivative(hr.outputLayerWeightedSum[i])+", ");
+            System.out.print(hr.outputLayerWeightedSum[i]+", ");
+        }
+        */
+        System.out.println("\n\noutput layer");
+        for(int i = 0; i < hr.outputLayer.length; i++){
+            System.out.print(hr.outputLayer[i]+", ");
+        }
+        
+        System.out.println("\n\noutput delta");
+        for(int i = 0; i < hr.outputLayerDelta.length; i++){
+            System.out.print(hr.outputLayerDelta[i]+", ");
+        }
     }
     
     //test 
     public void test(double[] input){
         //enter input layer 
         for(int i = 0; i < input.length-1; i++){
-            testInputLayer[i] = input[i];
+            testInputLayer[i] = input[i]/16;
         }
         testInputLayer[testInputLayer.length-1] = 1;
         
@@ -352,8 +316,8 @@ public class handwritingRecognition {
     public void feedForward(double[] input){
         //enter input layer 
         for(int i = 0; i < input.length-1; i++){
-            inputLayer[i] = input[i];
-            inputLayerWeightedSum[i] = input[i];
+            inputLayer[i] = input[i]/16;
+            inputLayerWeightedSum[i] = input[i]/16;
         }
         inputLayer[inputLayer.length-1] = 1;
         inputLayerWeightedSum[inputLayerWeightedSum.length-1] = 1;
@@ -432,7 +396,8 @@ public class handwritingRecognition {
         }*/
         for(int i = 0; i < outputLayer.length; i++){
             if (i == expectedOutput){
-                outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (outputLayerSum-outputLayer[i]);
+                outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (1-outputLayer[i]);
+                //System.out.println("what what" + sigmoidFunctionDerivative(outputLayerWeightedSum[i]));
             }else{
                 outputLayerDelta[i] = sigmoidFunctionDerivative(outputLayerWeightedSum[i]) * (0-outputLayer[i]);
             }

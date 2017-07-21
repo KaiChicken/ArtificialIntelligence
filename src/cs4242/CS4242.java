@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package cs4242;
-
+import java.util.*;
 /**
  *
  * @author Tong
@@ -16,6 +16,8 @@ public class CS4242 {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        int a = (int)Math.random()*4;
+        System.out.println("a = " + a);
     }
     
 }
